@@ -55,7 +55,7 @@ namespace Api.Migrations
 
                     b.HasIndex("MealId");
 
-                    b.ToTable("Ingredients");
+                    b.ToTable("Ingredients", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.InstructionIngredient", b =>
@@ -80,13 +80,18 @@ namespace Api.Migrations
                     b.Property<int>("SortOrder")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("SectionId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IngredientId");
 
                     b.HasIndex("InstructionStepId");
 
-                    b.ToTable("InstructionIngredients");
+                    b.HasIndex("SectionId");
+
+                    b.ToTable("InstructionIngredients", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.InstructionStep", b =>
@@ -105,11 +110,16 @@ namespace Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("SectionId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("MealId");
 
-                    b.ToTable("InstructionSteps");
+                    b.HasIndex("SectionId");
+
+                    b.ToTable("InstructionSteps", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Meal", b =>
@@ -127,7 +137,30 @@ namespace Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Meals");
+                    b.ToTable("Meals", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Models.Section", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("MealId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MealId");
+
+                    b.ToTable("Sections", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Ingredient", b =>
@@ -153,6 +186,11 @@ namespace Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Models.Section", null)
+                        .WithMany()
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("Ingredient");
                 });
 
@@ -163,6 +201,11 @@ namespace Api.Migrations
                         .HasForeignKey("MealId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Domain.Models.Section", null)
+                        .WithMany()
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("Domain.Models.InstructionStep", b =>
@@ -175,6 +218,15 @@ namespace Api.Migrations
                     b.Navigation("Ingredients");
 
                     b.Navigation("Instructions");
+                });
+
+            modelBuilder.Entity("Domain.Models.Section", b =>
+                {
+                    b.HasOne("Domain.Models.Meal", null)
+                        .WithMany()
+                        .HasForeignKey("MealId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

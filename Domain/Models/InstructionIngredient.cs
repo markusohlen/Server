@@ -10,5 +10,6 @@ public class InstructionIngredient
     public int SortOrder { get; set; }
     public Guid InstructionStepId { get; set; }
     public Guid IngredientId { get; set; }
+    public Guid? SectionId { get; set; }
     public Ingredient Ingredient { get; set; } = default!;
 }
