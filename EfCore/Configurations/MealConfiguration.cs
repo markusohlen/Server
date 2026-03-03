@@ -8,6 +8,7 @@ public class MealConfiguration : IEntityTypeConfiguration<Meal>
 {
     public void Configure(EntityTypeBuilder<Meal> builder)
     {
+
         // Define the relationship between Meal and Ingredient
         builder.HasMany(m => m.Ingredients)
             .WithOne()

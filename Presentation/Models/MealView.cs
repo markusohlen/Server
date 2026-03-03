@@ -4,6 +4,7 @@ public class MealView
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = default!;
+    public List<string> Categories { get; set; } = [];
     public List<InstructionStepView> Instructions { get; set; } = new();
     public List<IngredientsView> Ingredients { get; set; } = new();
     public int Portions { get; set; }

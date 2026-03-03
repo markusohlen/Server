@@ -93,6 +93,7 @@ public class MealRepository : IMealRepository
         {
             Id = m.Id,
             Name = m.Name,
+            Categories = m.Categories,
             Ingredients = m.Ingredients.Select(ToIngredientsView).ToList(),
             Instructions = m.Instructions
                 .OrderBy(s => s.StepNumber)

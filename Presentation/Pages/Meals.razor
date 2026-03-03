@@ -16,18 +16,41 @@ else if (meals is null || meals.Count == 0)
 }
 else
 {
-    <RadzenDataList Data="@meals" TItem="MealView">
-        <Template Context="meal">
-            <RadzenCard class="meal-card" Style="cursor:pointer" @onclick="@(() => Nav.NavigateTo($"/meals/{meal.Id}"))">
-                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
-                    <RadzenText TextStyle="TextStyle.H5">@meal.Name</RadzenText>
-                    <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem">
-                        <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@($"{meal.Portions} portions")" />
-                        <RadzenBadge BadgeStyle="BadgeStyle.Success" Text="@($"{meal.TotalCalories} kcal")" />
-                        <RadzenBadge BadgeStyle="BadgeStyle.Warning" Text="@($"{meal.TotalProtein}g protein")" />
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" Gap="1rem" class="search-bar">
+        <RadzenStack Gap="0.25rem">
+            <RadzenLabel Text="Search" />
+            <RadzenTextBox Value="@searchText" @oninput="OnSearchInput" Placeholder="Search by name or category..." />
+        </RadzenStack>
+        <RadzenButton Text="Clear" ButtonStyle="ButtonStyle.Light" Click="@ClearSearch" />
+    </RadzenStack>
+
+    @if (FilteredMeals.Count == 0)
+    {
+        <RadzenAlert AlertStyle="AlertStyle.Info" Shade="Shade.Lighter" class="no-results">
+            No meals match your search.
+        </RadzenAlert>
+    }
+    else
+    {
+        <RadzenDataList Data="@FilteredMeals" TItem="MealView">
+            <Template Context="meal">
+                <RadzenCard class="meal-card" Style="cursor:pointer" @onclick="@(() => Nav.NavigateTo($"/meals/{meal.Id}"))">
+                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.75rem">
+                            <RadzenText TextStyle="TextStyle.H5">@meal.Name</RadzenText>
+                            @foreach (var category in meal.Categories)
+                            {
+                                <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text="@category" />
+                            }
+                        </RadzenStack>
+                        <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem">
+                            <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@($"{meal.Portions} portions")" />
+                            <RadzenBadge BadgeStyle="BadgeStyle.Success" Text="@($"{meal.TotalCalories} kcal")" />
+                            <RadzenBadge BadgeStyle="BadgeStyle.Warning" Text="@($"{meal.TotalProtein}g protein")" />
+                        </RadzenStack>
                     </RadzenStack>
-                </RadzenStack>
-            </RadzenCard>
-        </Template>
-    </RadzenDataList>
+                </RadzenCard>
+            </Template>
+        </RadzenDataList>
+    }
 }

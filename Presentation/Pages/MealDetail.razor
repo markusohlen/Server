@@ -19,6 +19,10 @@ else
     <RadzenText TextStyle="TextStyle.H3">@meal.Name</RadzenText>
 
     <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" class="badge-row">
+        @foreach (var category in meal.Categories)
+        {
+            <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text="@category" />
+        }
         <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@($"{meal.Portions} portions")" />
         <RadzenBadge BadgeStyle="BadgeStyle.Success" Text="@($"{meal.TotalCalories} kcal")" />
         <RadzenBadge BadgeStyle="BadgeStyle.Warning" Text="@($"{meal.TotalProtein}g protein")" />
