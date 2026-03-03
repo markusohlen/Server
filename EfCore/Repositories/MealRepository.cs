@@ -36,23 +36,31 @@ public class MealRepository : IMealRepository
     // Fetch a meal by its ID
     public async Task<MealView?> GetMealByIdAsync(Guid id)
     {
-        return await _context.Meals
+        var meal = await _context.Meals
             .Include(m => m.Ingredients)
             .Include(m => m.Instructions)
                 .ThenInclude(s => s.InstructionIngredients)
                     .ThenInclude(ii => ii.Ingredient)
-            .Select(m => new MealView
-            {
-                Id = m.Id,
-                Name = m.Name,
-                Ingredients = m.Ingredients.Select(i => ToIngredientsView(i)).ToList(),
-                Instructions = m.Instructions
-                    .OrderBy(s => s.StepNumber)
-                    .Select(s => ToInstructionStepView(s))
-                    .ToList(),
-                Portions = m.Portions
-            })
+            .AsNoTracking()
             .FirstOrDefaultAsync(m => m.Id == id);
+
+        if (meal == null) return null;
+
+        return ToMealView(meal);
+    }
+
+    // Fetch all meals as MealView
+    public async Task<List<MealView>> GetAllMealViewsAsync()
+    {
+        var meals = await _context.Meals
+            .Include(m => m.Ingredients)
+            .Include(m => m.Instructions)
+                .ThenInclude(s => s.InstructionIngredients)
+                    .ThenInclude(ii => ii.Ingredient)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return meals.Select(ToMealView).ToList();
     }
 
     // Add a new meal to the database
@@ -79,6 +87,21 @@ public class MealRepository : IMealRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    private static MealView ToMealView(Meal m) =>
+        new MealView
+        {
+            Id = m.Id,
+            Name = m.Name,
+            Ingredients = m.Ingredients.Select(ToIngredientsView).ToList(),
+            Instructions = m.Instructions
+                .OrderBy(s => s.StepNumber)
+                .Select(ToInstructionStepView)
+                .ToList(),
+            Portions = m.Portions,
+            TotalCalories = m.Ingredients.Sum(i => i.Calories),
+            TotalProtein = m.Ingredients.Sum(i => i.Protein)
+        };
 
     private static IngredientsView ToIngredientsView(Ingredient i) =>
         new IngredientsView

@@ -27,6 +27,17 @@ public class MealPlannerController : ControllerBase
         return Ok(mealIds);
     }
 
+    [HttpGet("getallmeals")]
+    public async Task<ActionResult<List<MealView>>> GetAllMeals()
+    {
+        var response = await _mealService.GetAllMealViewsAsync();
+        if (response == null || response.Data == null)
+        {
+            return NotFound(new { Message = $"No meals were found." });
+        }
+        return Ok(response.Data);
+    }
+
     [HttpGet("getmealbyid/{id}")]
     public async Task<ActionResult<MealView>> GetMealById(Guid id)
     {

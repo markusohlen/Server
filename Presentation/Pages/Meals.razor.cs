@@ -19,15 +19,7 @@ public partial class Meals
     {
         try
         {
-            var ids = await Api.GetAllMealIdsAsync();
-            var loadedMeals = new List<MealView>();
-            foreach (var id in ids)
-            {
-                var meal = await Api.GetMealByIdAsync(id);
-                if (meal is not null)
-                    loadedMeals.Add(meal);
-            }
-            meals = loadedMeals;
+            meals = await Api.GetAllMealsAsync();
         }
         catch (Exception ex)
         {

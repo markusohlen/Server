@@ -40,16 +40,18 @@ else
     <RadzenText TextStyle="TextStyle.H5" class="section-title">Instructions</RadzenText>
 
     <RadzenTimeline>
-        @foreach (var step in meal.Instructions.OrderBy(s => s.StepNumber))
-        {
-            <RadzenTimelineItem>
-                <ChildContent>
-                    <RadzenText TextStyle="TextStyle.Body1">@step.DisplayText</RadzenText>
-                </ChildContent>
-                <LabelContent>
-                    <RadzenText TextStyle="TextStyle.Subtitle2">Step @step.StepNumber</RadzenText>
-                </LabelContent>
-            </RadzenTimelineItem>
-        }
+        <Items>
+            @foreach (var step in meal.Instructions.OrderBy(s => s.StepNumber))
+            {
+                <RadzenTimelineItem>
+                    <ChildContent>
+                        <RadzenText TextStyle="TextStyle.Body1">@step.DisplayText</RadzenText>
+                    </ChildContent>
+                    <LabelContent>
+                        <RadzenText TextStyle="TextStyle.Subtitle2">Step @step.StepNumber</RadzenText>
+                    </LabelContent>
+                </RadzenTimelineItem>
+            }
+        </Items>
     </RadzenTimeline>
 }

@@ -25,6 +25,12 @@ public class MealPlannerService
         return ApiResponse<List<Meal>>.Ok(meals);
     }
 
+    public async Task<ApiResponse<List<MealView>>> GetAllMealViewsAsync()
+    {
+        var meals = await _mealRepository.GetAllMealViewsAsync();
+        return ApiResponse<List<MealView>>.Ok(meals);
+    }
+
     public async Task<ApiResponse<MealView>> GetMealByIdResponseAsync(Guid id)
     {
         var meal = await _mealRepository.GetMealByIdAsync(id);
