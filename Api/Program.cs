@@ -30,7 +30,10 @@ internal class Program
             options.AddPolicy("AllowLocalhost3000",
                 policy =>
                 {
-                    policy.WithOrigins("http://localhost:3000") // Allow only frontend origin
+                    policy.WithOrigins(
+                               "http://localhost:3000",
+                               "https://localhost:7093",
+                               "http://localhost:5078")
                           .AllowAnyHeader()
                           .AllowAnyMethod();
                 });

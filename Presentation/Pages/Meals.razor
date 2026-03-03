@@ -1,0 +1,33 @@
+@page "/meals"
+
+<PageTitle>Meals</PageTitle>
+
+<RadzenText TextStyle="TextStyle.H3" class="page-title">Meals</RadzenText>
+
+@if (loading)
+{
+    <RadzenProgressBarCircular ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+}
+else if (meals is null || meals.Count == 0)
+{
+    <RadzenAlert AlertStyle="AlertStyle.Info" Shade="Shade.Lighter">
+        No meals found.
+    </RadzenAlert>
+}
+else
+{
+    <RadzenDataList Data="@meals" TItem="MealView">
+        <Template Context="meal">
+            <RadzenCard class="meal-card" Style="cursor:pointer" @onclick="@(() => Nav.NavigateTo($"/meals/{meal.Id}"))">
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+                    <RadzenText TextStyle="TextStyle.H5">@meal.Name</RadzenText>
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem">
+                        <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@($"{meal.Portions} portions")" />
+                        <RadzenBadge BadgeStyle="BadgeStyle.Success" Text="@($"{meal.TotalCalories} kcal")" />
+                        <RadzenBadge BadgeStyle="BadgeStyle.Warning" Text="@($"{meal.TotalProtein}g protein")" />
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenCard>
+        </Template>
+    </RadzenDataList>
+}
