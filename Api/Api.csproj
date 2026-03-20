@@ -19,6 +19,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\EfCore\Database.EfCore.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\Infrastructure.AI\Infrastructure.AI.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,105 @@
+@page "/meals/add"
+
+<PageTitle>Add Recipe</PageTitle>
+
+<RadzenButton Icon="arrow_back" Text="Back to Meals" ButtonStyle="ButtonStyle.Light" Click="@(() => Nav.NavigateTo("meals"))" class="back-button" />
+
+<RadzenText TextStyle="TextStyle.H3" class="page-title">Add Recipe</RadzenText>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <RadzenAlert AlertStyle="AlertStyle.Danger" Shade="Shade.Lighter" AllowClose="true" Close="@(() => errorMessage = null)">
+        @errorMessage
+    </RadzenAlert>
+}
+
+<RadzenFieldset Text="Import from URL">
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" Gap="0.75rem">
+        <RadzenStack Gap="0.25rem" Style="flex:1">
+            <RadzenLabel Text="Recipe URL" />
+            <RadzenTextBox @bind-Value="importUrl" Placeholder="Paste a recipe link to auto-fill the form..." Style="width:100%" />
+        </RadzenStack>
+        <RadzenButton Text="Import" Icon="download" ButtonStyle="ButtonStyle.Info" Click="@ImportFromUrl" IsBusy="@importing" />
+    </RadzenStack>
+</RadzenFieldset>
+
+<RadzenTemplateForm TItem="CreateMealModel" Data="@model" Submit="@OnSubmit">
+    <RadzenFieldset Text="Basic Info">
+        <RadzenStack Gap="1rem">
+            <RadzenStack Gap="0.25rem">
+                <RadzenLabel Text="Name" Component="Name" />
+                <RadzenTextBox Name="Name" @bind-Value="model.Name" Placeholder="Recipe name..." Style="width:100%" />
+                <RadzenRequiredValidator Component="Name" Text="Name is required." />
+            </RadzenStack>
+
+            <RadzenStack Gap="0.25rem">
+                <RadzenLabel Text="Categories (comma-separated)" Component="Categories" />
+                <RadzenTextBox Name="Categories" @bind-Value="model.Categories" Placeholder="e.g. Lunch, Swedish, Vegetarian" Style="width:100%" />
+            </RadzenStack>
+
+            <RadzenStack Gap="0.25rem">
+                <RadzenLabel Text="Portions" Component="Portions" />
+                <RadzenNumeric TValue="int" Name="Portions" @bind-Value="model.Portions" Min="1" Max="100" Style="width:200px" />
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenFieldset>
+
+    <RadzenFieldset Text="Ingredients" class="form-section">
+        @for (int i = 0; i < model.Ingredients.Count; i++)
+        {
+            var index = i;
+            <RadzenCard class="item-card">
+                <RadzenStack Gap="0.5rem">
+                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" Gap="0.75rem" Wrap="FlexWrap.Wrap">
+                        <RadzenStack Gap="0.25rem">
+                            <RadzenLabel Text="Name" />
+                            <RadzenStack Orientation="Orientation.Horizontal" Gap="0.25rem" AlignItems="AlignItems.Center">
+                                <RadzenAutoComplete @bind-Value="model.Ingredients[index].Name" Data="@ingredientNames" Placeholder="Search or enter ingredient name" MinLength="1" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Style="width:200px" />
+                                <RadzenButton Icon="search" ButtonStyle="ButtonStyle.Info" Variant="Variant.Text" Size="ButtonSize.Small" Click="@(() => LookupNutrition(index))" IsBusy="@model.Ingredients[index].LookingUp" title="Look up nutrition data" />
+                            </RadzenStack>
+                        </RadzenStack>
+                        <RadzenStack Gap="0.25rem">
+                            <RadzenLabel Text="Volume" />
+                            <RadzenNumeric TValue="int" @bind-Value="model.Ingredients[index].Volume" Min="0" Style="width:100px" />
+                        </RadzenStack>
+                        <RadzenStack Gap="0.25rem">
+                            <RadzenLabel Text="Measure" />
+                            <RadzenDropDown TValue="int" @bind-Value="model.Ingredients[index].Measure" Data="@measureOptions" TextProperty="Label" ValueProperty="Value" Style="width:150px" />
+                        </RadzenStack>
+                        <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Variant="Variant.Text" Click="@(() => RemoveIngredient(index))" Disabled="@(model.Ingredients.Count <= 1)" />
+                    </RadzenStack>
+                    @if (model.Ingredients[index].Calories.HasValue)
+                    {
+                        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem">
+                            <RadzenBadge BadgeStyle="BadgeStyle.Success" Text="@($"{model.Ingredients[index].Calories} kcal/100g")" />
+                            <RadzenBadge BadgeStyle="BadgeStyle.Warning" Text="@($"{model.Ingredients[index].Protein}g protein/100g")" />
+                        </RadzenStack>
+                    }
+                </RadzenStack>
+            </RadzenCard>
+        }
+        <RadzenButton Icon="add_circle_outline" Text="Add Ingredient" ButtonStyle="ButtonStyle.Secondary" Variant="Variant.Text" Click="@AddIngredient" class="add-button" />
+    </RadzenFieldset>
+
+    <RadzenFieldset Text="Instructions" class="form-section">
+        @for (int i = 0; i < model.Instructions.Count; i++)
+        {
+            var index = i;
+            <RadzenCard class="item-card">
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" Gap="0.75rem">
+                    <RadzenText TextStyle="TextStyle.Subtitle2" class="step-label">Step @(index + 1)</RadzenText>
+                    <RadzenStack Gap="0.25rem" Style="flex:1">
+                        <RadzenTextArea @bind-Value="model.Instructions[index].Text" Placeholder="Describe this step..." Rows="2" Style="width:100%" />
+                    </RadzenStack>
+                    <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Variant="Variant.Text" Click="@(() => RemoveInstruction(index))" Disabled="@(model.Instructions.Count <= 1)" />
+                </RadzenStack>
+            </RadzenCard>
+        }
+        <RadzenButton Icon="add_circle_outline" Text="Add Step" ButtonStyle="ButtonStyle.Secondary" Variant="Variant.Text" Click="@AddInstruction" class="add-button" />
+    </RadzenFieldset>
+
+    <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" class="form-actions">
+        <RadzenButton ButtonType="ButtonType.Submit" Text="Save Recipe" Icon="save" ButtonStyle="ButtonStyle.Primary" IsBusy="@saving" />
+        <RadzenButton Text="Cancel" ButtonStyle="ButtonStyle.Light" Click="@(() => Nav.NavigateTo("meals"))" />
+    </RadzenStack>
+</RadzenTemplateForm>

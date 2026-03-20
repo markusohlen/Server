@@ -1,0 +1,32 @@
+.back-button {
+    margin-bottom: 1.5rem;
+}
+
+.page-title {
+    margin-bottom: 1.5rem;
+}
+
+.form-section {
+    margin-top: 1.5rem;
+}
+
+::deep .import-section {
+    margin-bottom: 1.5rem;
+}
+
+.item-card {
+    margin-bottom: 0.5rem;
+}
+
+.step-label {
+    min-width: 60px;
+}
+
+.add-button {
+    margin-top: 0.5rem;
+}
+
+.form-actions {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}

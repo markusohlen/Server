@@ -1,0 +1,61 @@
+@page "/meals/{Id:guid}"
+
+<PageTitle>Meal Details</PageTitle>
+
+<RadzenButton Icon="arrow_back" Text="Back to Meals" ButtonStyle="ButtonStyle.Light" Click="@(() => Nav.NavigateTo("meals"))" class="back-button" />
+
+@if (loading)
+{
+    <RadzenProgressBarCircular ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+}
+else if (meal is null)
+{
+    <RadzenAlert AlertStyle="AlertStyle.Danger" Shade="Shade.Lighter">
+        Meal not found.
+    </RadzenAlert>
+}
+else
+{
+    <RadzenText TextStyle="TextStyle.H3">@meal.Name</RadzenText>
+
+    <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" class="badge-row">
+        @foreach (var category in meal.Categories)
+        {
+            <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text="@category" />
+        }
+        <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@($"{meal.Portions} portions")" />
+        <RadzenBadge BadgeStyle="BadgeStyle.Success" Text="@($"{meal.TotalCalories} kcal")" />
+        <RadzenBadge BadgeStyle="BadgeStyle.Warning" Text="@($"{meal.TotalProtein}g protein")" />
+    </RadzenStack>
+
+    <RadzenText TextStyle="TextStyle.H5" class="section-title">Ingredients</RadzenText>
+
+    <RadzenDataGrid Data="@meal.Ingredients" TItem="IngredientsView" ColumnWidth="150px">
+        <Columns>
+            <RadzenDataGridColumn TItem="IngredientsView" Property="Name" Title="Name" />
+            <RadzenDataGridColumn TItem="IngredientsView" Property="Volume" Title="Amount" />
+            <RadzenDataGridColumn TItem="IngredientsView" Property="Measure" Title="Measure" />
+            <RadzenDataGridColumn TItem="IngredientsView" Property="Calories" Title="Calories" />
+            <RadzenDataGridColumn TItem="IngredientsView" Property="Protein" Title="Protein (g)" />
+            <RadzenDataGridColumn TItem="IngredientsView" Property="Price" Title="Price" FormatString="{0:N2}" />
+        </Columns>
+    </RadzenDataGrid>
+
+    <RadzenText TextStyle="TextStyle.H5" class="section-title">Instructions</RadzenText>
+
+    <RadzenTimeline>
+        <Items>
+            @foreach (var step in meal.Instructions.OrderBy(s => s.StepNumber))
+            {
+                <RadzenTimelineItem>
+                    <ChildContent>
+                        <RadzenText TextStyle="TextStyle.Body1">@step.DisplayText</RadzenText>
+                    </ChildContent>
+                    <LabelContent>
+                        <RadzenText TextStyle="TextStyle.Subtitle2">Step @step.StepNumber</RadzenText>
+                    </LabelContent>
+                </RadzenTimelineItem>
+            }
+        </Items>
+    </RadzenTimeline>
+}
