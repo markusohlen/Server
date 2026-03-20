@@ -2,7 +2,10 @@
 
 <PageTitle>Meals</PageTitle>
 
-<RadzenText TextStyle="TextStyle.H3" class="page-title">Meals</RadzenText>
+<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween" class="page-header">
+    <RadzenText TextStyle="TextStyle.H3" class="page-title">Meals</RadzenText>
+    <RadzenButton Text="Add Recipe" Icon="add" ButtonStyle="ButtonStyle.Primary" Click="@(() => Nav.NavigateTo("meals/add"))" />
+</RadzenStack>
 
 @if (loading)
 {

@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
+public record ImportRecipeRequest(string Url);
+
 [Route("mealplanner")]
 [ApiController]
 public class MealPlannerController : ControllerBase
@@ -45,6 +47,35 @@ public class MealPlannerController : ControllerBase
         if (response == null || response.Data == null)
         {
             return NotFound(new { Message = $"Meal with id {id} not found." });
+        }
+        return Ok(response.Data);
+    }
+
+    [HttpGet("getallingredientnames")]
+    public async Task<ActionResult<List<string>>> GetAllIngredientNames()
+    {
+        var response = await _mealService.GetAllIngredientNamesAsync();
+        return Ok(response.Data);
+    }
+
+    [HttpGet("lookupingredient/{name}")]
+    public async Task<ActionResult<IngredientNutritionData>> LookupIngredient(string name)
+    {
+        var response = await _mealService.LookupIngredientNutritionAsync(name);
+        if (!response.Success || response.Data == null)
+        {
+            return NotFound(new { Message = $"Nutrition data not found for '{name}'." });
+        }
+        return Ok(response.Data);
+    }
+
+    [HttpPost("importrecipe")]
+    public async Task<ActionResult<ImportedRecipeData>> ImportRecipe([FromBody] ImportRecipeRequest request)
+    {
+        var response = await _mealService.ImportRecipeAsync(request.Url);
+        if (!response.Success || response.Data == null)
+        {
+            return BadRequest(new { Message = response.Message });
         }
         return Ok(response.Data);
     }

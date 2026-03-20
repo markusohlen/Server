@@ -21,7 +21,7 @@ internal class Program
         builder.Services.AddSwaggerGen();
 
 
-        builder.Services.RegisterServices();
+        builder.Services.RegisterServices(builder.Configuration);
         builder.Services.RegisterRepositories();
 
         //CORS

@@ -12,4 +12,5 @@ public interface IMealRepository
     Task AddMealAsync(Meal meal);
     Task UpdateMealAsync(Meal meal);
     Task DeleteMealAsync(Guid id);
+    Task<List<string>> GetAllIngredientNamesAsync();
 }

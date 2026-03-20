@@ -77,6 +77,15 @@ public class MealRepository : IMealRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<List<string>> GetAllIngredientNamesAsync()
+    {
+        return await _context.Ingredients
+            .Select(i => i.Name)
+            .Distinct()
+            .OrderBy(n => n)
+            .ToListAsync();
+    }
+
     // Delete a meal
     public async Task DeleteMealAsync(Guid id)
     {
