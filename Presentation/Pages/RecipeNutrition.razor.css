@@ -1,0 +1,50 @@
+.page-title {
+    margin-bottom: 1.5rem;
+}
+
+.status-alert {
+    margin-top: 1rem;
+}
+
+.recipe-section {
+    margin-top: 1.5rem;
+}
+
+.recipe-meta {
+    margin-bottom: 0.25rem;
+}
+
+.loading-section {
+    margin: 2rem 0;
+}
+
+.nutrition-section {
+    margin-top: 1.5rem;
+}
+
+.section-note {
+    margin-bottom: 1rem;
+    opacity: 0.7;
+}
+
+.nutrition-grid {
+    margin-top: 0.5rem;
+}
+
+.macro-summary {
+    padding: 1rem 0;
+}
+
+.macro-card {
+    min-width: 140px;
+    text-align: center;
+}
+
+.macro-value {
+    color: var(--rz-primary);
+}
+
+.macro-label {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}

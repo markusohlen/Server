@@ -1,0 +1,152 @@
+@page "/recipe-nutrition"
+
+<PageTitle>Recipe Nutrition Analyzer</PageTitle>
+
+<RadzenText TextStyle="TextStyle.H3" class="page-title">Recipe Nutrition Analyzer</RadzenText>
+
+<RadzenFieldset Text="Import Recipe from URL">
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" Gap="0.75rem">
+        <RadzenStack Gap="0.25rem" Style="flex:1">
+            <RadzenLabel Text="Recipe URL" />
+            <RadzenTextBox @bind-Value="recipeUrl" Placeholder="Paste a recipe link to analyze nutrition..." Style="width:100%" />
+        </RadzenStack>
+        <RadzenButton Text="Analyze" Icon="science" ButtonStyle="ButtonStyle.Primary" Click="@AnalyzeRecipe" IsBusy="@analyzing" />
+    </RadzenStack>
+</RadzenFieldset>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <RadzenAlert AlertStyle="AlertStyle.Danger" Shade="Shade.Lighter" AllowClose="true" Close="@(() => errorMessage = null)" class="status-alert">
+        @errorMessage
+    </RadzenAlert>
+}
+
+@if (recipe is not null)
+{
+    <RadzenFieldset Text="@recipe.Name" class="recipe-section">
+        <RadzenStack Gap="0.25rem">
+            <RadzenText TextStyle="TextStyle.Body2" class="recipe-meta">
+                <strong>Categories:</strong> @string.Join(", ", recipe.Categories)
+            </RadzenText>
+            <RadzenText TextStyle="TextStyle.Body2" class="recipe-meta">
+                <strong>Portions:</strong> @recipe.Portions
+            </RadzenText>
+        </RadzenStack>
+    </RadzenFieldset>
+
+    @if (lookingUpAll)
+    {
+        <RadzenStack AlignItems="AlignItems.Center" class="loading-section">
+            <RadzenProgressBarCircular ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+            <RadzenText TextStyle="TextStyle.Body1">Looking up nutritional data for all ingredients...</RadzenText>
+        </RadzenStack>
+    }
+
+    @if (ingredientRows.Count > 0)
+    {
+        <RadzenFieldset Text="Ingredient Nutrition Breakdown" class="nutrition-section">
+            <RadzenText TextStyle="TextStyle.Body2" class="section-note">
+                All values calculated based on each ingredient's actual weight. Steve's Lava Chicken (250 g) is automatically included.
+            </RadzenText>
+
+            <RadzenDataGrid TItem="IngredientNutritionRow" Data="@ingredientRows" AllowSorting="true" class="nutrition-grid">
+                <Columns>
+                    <RadzenDataGridColumn TItem="IngredientNutritionRow" Property="Name" Title="Ingredient" Width="180px">
+                        <Template Context="row">
+                            @if (row.IsLavaChicken)
+                            {
+                                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
+                                    <RadzenIcon Icon="local_fire_department" Style="color: var(--rz-danger);" />
+                                    <strong>@row.Name</strong>
+                                </RadzenStack>
+                            }
+                            else if (row.IsTotal)
+                            {
+                                <strong>@row.Name</strong>
+                            }
+                            else
+                            {
+                                @row.Name
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="IngredientNutritionRow" Property="WeightGrams" Title="Weight (g)" FormatString="{0:F0}" Width="90px" />
+                    <RadzenDataGridColumn TItem="IngredientNutritionRow" Property="Calories" Title="Calories" FormatString="{0:F0}" Width="85px" />
+                    <RadzenDataGridColumn TItem="IngredientNutritionRow" Property="Protein" Title="Protein (g)" FormatString="{0:F1}" Width="95px" />
+                    <RadzenDataGridColumn TItem="IngredientNutritionRow" Property="Fat" Title="Fat (g)" FormatString="{0:F1}" Width="80px" />
+                    <RadzenDataGridColumn TItem="IngredientNutritionRow" Property="SaturatedFat" Title="Sat. Fat (g)" FormatString="{0:F1}" Width="100px" />
+                    <RadzenDataGridColumn TItem="IngredientNutritionRow" Property="Carbs" Title="Carbs (g)" FormatString="{0:F1}" Width="90px" />
+                    <RadzenDataGridColumn TItem="IngredientNutritionRow" Property="Sugar" Title="Sugar (g)" FormatString="{0:F1}" Width="85px" />
+                    <RadzenDataGridColumn TItem="IngredientNutritionRow" Property="Fiber" Title="Fiber (g)" FormatString="{0:F1}" Width="85px" />
+                    <RadzenDataGridColumn TItem="IngredientNutritionRow" Property="Sodium" Title="Sodium (g)" FormatString="{0:F2}" Width="95px" />
+                </Columns>
+            </RadzenDataGrid>
+        </RadzenFieldset>
+
+        <RadzenFieldset Text="Micronutrients" class="nutrition-section">
+            <RadzenDataGrid TItem="IngredientNutritionRow" Data="@ingredientRows" AllowSorting="true" class="nutrition-grid">
+                <Columns>
+                    <RadzenDataGridColumn TItem="IngredientNutritionRow" Property="Name" Title="Ingredient" Width="180px">
+                        <Template Context="row">
+                            @if (row.IsLavaChicken)
+                            {
+                                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
+                                    <RadzenIcon Icon="local_fire_department" Style="color: var(--rz-danger);" />
+                                    <strong>@row.Name</strong>
+                                </RadzenStack>
+                            }
+                            else if (row.IsTotal)
+                            {
+                                <strong>@row.Name</strong>
+                            }
+                            else
+                            {
+                                @row.Name
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="IngredientNutritionRow" Property="WeightGrams" Title="Weight (g)" FormatString="{0:F0}" Width="90px" />
+                    <RadzenDataGridColumn TItem="IngredientNutritionRow" Property="Iron" Title="Iron (mg)" FormatString="{0:F2}" Width="85px" />
+                    <RadzenDataGridColumn TItem="IngredientNutritionRow" Property="Calcium" Title="Calcium (mg)" FormatString="{0:F1}" Width="100px" />
+                    <RadzenDataGridColumn TItem="IngredientNutritionRow" Property="VitaminA" Title="Vit A (µg)" FormatString="{0:F1}" Width="90px" />
+                    <RadzenDataGridColumn TItem="IngredientNutritionRow" Property="VitaminC" Title="Vit C (mg)" FormatString="{0:F1}" Width="90px" />
+                </Columns>
+            </RadzenDataGrid>
+        </RadzenFieldset>
+
+        <RadzenFieldset Text="Macronutrient Summary (Entire Recipe)" class="nutrition-section">
+            <RadzenStack Orientation="Orientation.Horizontal" Gap="1.5rem" Wrap="FlexWrap.Wrap" JustifyContent="JustifyContent.Center" class="macro-summary">
+                <RadzenCard class="macro-card">
+                    <RadzenStack AlignItems="AlignItems.Center" Gap="0.25rem">
+                        <RadzenText TextStyle="TextStyle.H4" class="macro-value">@totalRow.Calories.ToString("F0")</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Caption" class="macro-label">Calories</RadzenText>
+                    </RadzenStack>
+                </RadzenCard>
+                <RadzenCard class="macro-card">
+                    <RadzenStack AlignItems="AlignItems.Center" Gap="0.25rem">
+                        <RadzenText TextStyle="TextStyle.H4" class="macro-value">@totalRow.Protein.ToString("F1") g</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Caption" class="macro-label">Protein</RadzenText>
+                    </RadzenStack>
+                </RadzenCard>
+                <RadzenCard class="macro-card">
+                    <RadzenStack AlignItems="AlignItems.Center" Gap="0.25rem">
+                        <RadzenText TextStyle="TextStyle.H4" class="macro-value">@totalRow.Fat.ToString("F1") g</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Caption" class="macro-label">Fat</RadzenText>
+                    </RadzenStack>
+                </RadzenCard>
+                <RadzenCard class="macro-card">
+                    <RadzenStack AlignItems="AlignItems.Center" Gap="0.25rem">
+                        <RadzenText TextStyle="TextStyle.H4" class="macro-value">@totalRow.Carbs.ToString("F1") g</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Caption" class="macro-label">Carbs</RadzenText>
+                    </RadzenStack>
+                </RadzenCard>
+                <RadzenCard class="macro-card">
+                    <RadzenStack AlignItems="AlignItems.Center" Gap="0.25rem">
+                        <RadzenText TextStyle="TextStyle.H4" class="macro-value">@totalRow.Fiber.ToString("F1") g</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Caption" class="macro-label">Fiber</RadzenText>
+                    </RadzenStack>
+                </RadzenCard>
+            </RadzenStack>
+        </RadzenFieldset>
+    }
+}

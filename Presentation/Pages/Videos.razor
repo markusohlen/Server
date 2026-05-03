@@ -1,0 +1,36 @@
+@page "/videos"
+
+<RadzenText TextStyle="TextStyle.H4" class="page-title">Media</RadzenText>
+
+<RadzenCard class="content-card">
+    <RadzenStack Gap="0.75rem">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenLink Path="videos/add" Text="Add" />
+            <RadzenButton Text="Refresh" ButtonStyle="ButtonStyle.Light" Click="@ReloadAsync" IsBusy="@IsLoading" />
+        </RadzenStack>
+
+        @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+        {
+            <RadzenAlert Severity="Radzen.AlertStyle.Danger" ShowClose="false">@ErrorMessage</RadzenAlert>
+        }
+
+        @if (Items.Count == 0 && !IsLoading)
+        {
+            <RadzenText>No uploads found.</RadzenText>
+        }
+        else
+        {
+            <RadzenDataList Data="@Items" TItem="Presentation.Services.UploadedMediaItem" PageSize="10">
+                <Template Context="item">
+                    <RadzenCard class="item-card">
+                        <RadzenStack Gap="0.25rem">
+                            <RadzenText TextStyle="TextStyle.Subtitle2">@item.Name</RadzenText>
+                            <RadzenLink Path="@item.AbsoluteUrl" Text="Open" Target="_blank" />
+                            <RadzenText TextStyle="TextStyle.Caption">@FormatBytes(item.SizeBytes) • @item.LastModifiedUtc.ToLocalTime()</RadzenText>
+                        </RadzenStack>
+                    </RadzenCard>
+                </Template>
+            </RadzenDataList>
+        }
+    </RadzenStack>
+</RadzenCard>

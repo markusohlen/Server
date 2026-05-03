@@ -13,5 +13,6 @@ builder.Services.AddScoped(sp => new HttpClient
 });
 
 builder.Services.AddScoped<MealPlannerApiService>();
+builder.Services.AddScoped<VideoApiService>();
 
 await builder.Build().RunAsync();

@@ -32,19 +32,34 @@ public class IngredientLookupService : IIngredientLookupService
         if (!product.TryGetProperty("nutriments", out var nutriments))
             return null;
 
-        var calories = 0;
-        var protein = 0;
-
-        if (nutriments.TryGetProperty("energy-kcal_100g", out var kcal))
-            calories = (int)Math.Round(kcal.GetDouble());
-
-        if (nutriments.TryGetProperty("proteins_100g", out var prot))
-            protein = (int)Math.Round(prot.GetDouble());
-
         return new IngredientNutritionData
         {
-            CaloriesPer100g = calories,
-            ProteinPer100g = protein
+            CaloriesPer100g = GetIntNutrient(nutriments, "energy-kcal_100g"),
+            ProteinPer100g = GetDoubleNutrient(nutriments, "proteins_100g"),
+            FatPer100g = GetDoubleNutrient(nutriments, "fat_100g"),
+            SaturatedFatPer100g = GetDoubleNutrient(nutriments, "saturated-fat_100g"),
+            CarbsPer100g = GetDoubleNutrient(nutriments, "carbohydrates_100g"),
+            SugarPer100g = GetDoubleNutrient(nutriments, "sugars_100g"),
+            FiberPer100g = GetDoubleNutrient(nutriments, "fiber_100g"),
+            SodiumPer100g = GetDoubleNutrient(nutriments, "sodium_100g"),
+            IronPer100g = GetDoubleNutrient(nutriments, "iron_100g"),
+            CalciumPer100g = GetDoubleNutrient(nutriments, "calcium_100g"),
+            VitaminAPer100g = GetDoubleNutrient(nutriments, "vitamin-a_100g"),
+            VitaminCPer100g = GetDoubleNutrient(nutriments, "vitamin-c_100g")
         };
+    }
+
+    private static int GetIntNutrient(JsonElement nutriments, string key)
+    {
+        if (nutriments.TryGetProperty(key, out var value))
+            return (int)Math.Round(value.GetDouble());
+        return 0;
+    }
+
+    private static double GetDoubleNutrient(JsonElement nutriments, string key)
+    {
+        if (nutriments.TryGetProperty(key, out var value))
+            return Math.Round(value.GetDouble(), 2);
+        return 0;
     }
 }

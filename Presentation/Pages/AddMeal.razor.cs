@@ -123,7 +123,7 @@ public partial class AddMeal
             if (data != null)
             {
                 ingredient.Calories = data.CaloriesPer100g;
-                ingredient.Protein = data.ProteinPer100g;
+                ingredient.Protein = (int)data.ProteinPer100g;
             }
         }
         catch (Exception ex)

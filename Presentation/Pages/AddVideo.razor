@@ -1,0 +1,31 @@
+@page "/videos/add"
+
+<RadzenText TextStyle="TextStyle.H4" class="page-title">Add Media</RadzenText>
+
+<RadzenCard class="content-card">
+    <RadzenStack Gap="0.75rem">
+        <RadzenText TextStyle="TextStyle.Body1">Upload a media file (video/audio) to storage.</RadzenText>
+
+        <RadzenTextBox @bind-Value="Category" Name="category" Placeholder="Category (optional)" Style="width: 100%;" />
+
+        <InputFile OnChange="OnFileSelected" accept="video/mp4,.mp4,video/*,audio/mpeg,.mp3,audio/*" />
+
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem">
+            <RadzenButton Text="Upload" ButtonStyle="ButtonStyle.Primary" Click="@OnUploadClicked" Disabled="@(!CanUpload)" IsBusy="@IsUploading" />
+            <RadzenButton Text="Back to Videos" ButtonStyle="ButtonStyle.Light" Click="@OnBackClicked" />
+        </RadzenStack>
+
+        @if (!string.IsNullOrWhiteSpace(StatusMessage))
+        {
+            <RadzenAlert Severity="@StatusSeverity" ShowClose="false">@StatusMessage</RadzenAlert>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(UploadedUrl))
+        {
+            <RadzenStack Gap="0.25rem">
+                <RadzenText TextStyle="TextStyle.Subtitle2">Uploaded URL</RadzenText>
+                <RadzenLink Path="@UploadedUrl" Text="@UploadedUrl" Target="_blank" />
+            </RadzenStack>
+        }
+    </RadzenStack>
+</RadzenCard>

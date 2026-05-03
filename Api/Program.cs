@@ -1,6 +1,7 @@
 using Api.Extensions;
 using Database.EfCore.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.Features;
 
 internal class Program
 {
@@ -23,6 +24,11 @@ internal class Program
 
         builder.Services.RegisterServices(builder.Configuration);
         builder.Services.RegisterRepositories();
+
+        builder.Services.Configure<FormOptions>(options =>
+        {
+            options.MultipartBodyLengthLimit = 1024L * 1024L * 1024L; // 1 GB
+        });
 
         //CORS
         builder.Services.AddCors(options =>
@@ -61,6 +67,8 @@ internal class Program
         }
 
         app.UseHttpsRedirection();
+
+        app.UseStaticFiles();
 
         app.UseAuthorization();
 
